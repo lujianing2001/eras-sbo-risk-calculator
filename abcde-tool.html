@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABCDE Screening Tool - ERAS Failure Risk</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .description {
+            background: #f8f9fa;
+            border-left: 4px solid #2a5298;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .description h3 {
+            color: #1e3c72;
+            margin-bottom: 8px;
+        }
+        
+        .description p {
+            font-size: 14px;
+            color: #555;
+        }
+        
+        .letter-section {
+            margin-bottom: 25px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            transition: border-color 0.3s;
+        }
+        
+        .letter-section:hover {
+            border-color: #2a5298;
+        }
+        
+        .letter-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .letter-badge {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            margin-right: 15px;
+        }
+        
+        .letter-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e3c72;
+        }
+        
+        .letter-subtitle {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .form-group .unit {
+            font-weight: normal;
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #2a5298;
+        }
+        
+        .indicator {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .indicator-normal {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .indicator-abnormal {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .score-display {
+            text-align: center;
+            margin: 30px 0;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .score-value {
+            font-size: 56px;
+            font-weight: 700;
+            color: #1e3c72;
+        }
+        
+        .score-label {
+            font-size: 16px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .risk-display {
+            text-align: center;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-size: 20px;
+        }
+        
+        .risk-low {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+        
+        .risk-intermediate {
+            background: #fff3cd;
+            color: #856404;
+            border: 2px solid #ffeaa7;
+        }
+        
+        .risk-high {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+        
+        .btn-calculate {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 20px;
+        }
+        
+        .btn-calculate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(30, 60, 114, 0.4);
+        }
+        
+        .calculator-link {
+            display: block;
+            text-align: center;
+            padding: 12px;
+            background: #17a2b8;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .calculator-link:hover {
+            background: #138496;
+        }
+        
+        .reference-table {
+            margin-top: 20px;
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        
+        .reference-table th,
+        .reference-table td {
+            padding: 8px 12px;
+            text-align: left;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .reference-table th {
+            background: #1e3c72;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .reference-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .disclaimer {
+            margin-top: 20px;
+            padding: 10px;
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #856404;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 13px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+        
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 22px;
+            }
+            
+            .score-value {
+                font-size: 42px;
+            }
+            
+            .letter-badge {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ABCDE Screening Tool</h1>
+            <p>Rapid Preoperative Risk Stratification for ERAS Failure in Emergency SBO Surgery</p>
+        </div>
+        
+        <div class="content">
+            <div class="description">
+                <h3>About the ABCDE Tool</h3>
+                <p>The ABCDE mnemonic provides a rapid, bedside-friendly screening approach to identify patients at risk for ERAS failure. Each letter represents a key domain of risk factors. This simplified tool is designed for quick clinical triage when detailed calculator input is not immediately feasible.</p>
+            </div>
+            
+            <form id="abcdeForm">
+                <!-- A: Age / Albumin -->
+                <div class="letter-section">
+                    <div class="letter-header">
+                        <div class="letter-badge">A</div>
+                        <div>
+                            <div class="letter-title">Age / Albumin</div>
+                            <div class="letter-subtitle">Demographics & Nutritional Status</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="age">
+                            Age (years)
+                            <span id="ageIndicator" class="indicator indicator-normal">Normal</span>
+                        </label>
+                        <input type="number" id="age" name="age" min="0" max="120" step="1" required placeholder="e.g., 65">
+                        <small style="color: #666;">Cutoff: ≥ 71 years is abnormal</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="albumin">
+                            Serum Albumin (g/L)
+                            <span id="albuminIndicator" class="indicator indicator-normal">Normal</span>
+                        </label>
+                        <input type="number" id="albumin" name="albumin" min="0" max="100" step="0.1" required placeholder="e.g., 35.5">
+                        <small style="color: #666;">Cutoff: ≤ 38 g/L is abnormal</small>
+                    </div>
+                </div>
+                
+                <!-- B: Biochemistry (Lactate) -->
+                <div class="letter-section">
+                    <div class="letter-header">
+                        <div class="letter-badge">B</div>
+                        <div>
+                            <div class="letter-title">Biochemistry</div>
+                            <div class="letter-subtitle">Metabolic Status (Serum Lactate)</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="lactate">
+                            Serum Lactate (mmol/L)
+                            <span id="lactateIndicator" class="indicator indicator-normal">Normal</span>
+                        </label>
+                        <input type="number" id="lactate" name="lactate" min="0" max="50" step="0.01" required placeholder="e.g., 2.5">
+                        <small style="color: #666;">Cutoff: ≥ 2.0 mmol/L is abnormal</small>
+                    </div>
+                </div>
+                
+                <!-- C: Comorbidity (ASA / aCCI) -->
+                <div class="letter-section">
+                    <div class="letter-header">
+                        <div class="letter-badge">C</div>
+                        <div>
+                            <div class="letter-title">Comorbidity</div>
+                            <div class="letter-subtitle">ASA Classification & Charlson Index</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="asa">
+                            ASA Classification
+                            <span id="asaIndicator" class="indicator indicator-normal">Normal</span>
+                        </label>
+                        <select id="asa" name="asa" required>
+                            <option value="">Select ASA grade</option>
+                            <option value="0">Grade I-II</option>
+                            <option value="1">Grade III-IV</option>
+                        </select>
+                        <small style="color: #666;">Grade III-IV is abnormal</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="acci">
+                            aCCI Score
+                            <span id="acciIndicator" class="indicator indicator-normal">Normal</span>
+                        </label>
+                        <input type="number" id="acci" name="acci" min="0" max="37" step="1" required placeholder="e.g., 3">
+                        <small style="color: #666;">Cutoff: ≥ 6 is abnormal</small>
+                    </div>
+                </div>
+                
+                <!-- D: Disturbance (Shock Index / Electrolyte) -->
+                <div class="letter-section">
+                    <div class="letter-header">
+                        <div class="letter-badge">D</div>
+                        <div>
+                            <div class="letter-title">Disturbance</div>
+                            <div class="letter-subtitle">Hemodynamic & Electrolyte Status</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="shockIndex">
+                            Shock Index (HR/SBP)
+                            <span id="shockIndicator" class="indicator indicator-normal">Normal</span>
+                        </label>
+                        <input type="number" id="shockIndex" name="shockIndex" min="0" max="5" step="0.01" required placeholder="e.g., 0.85">
+                        <small style="color: #666;">Cutoff: ≥ 0.915 is abnormal</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="electrolyte">
+                            Electrolyte Disturbance
+                            <span id="electrolyteIndicator" class="indicator indicator-normal">Normal</span>
+                        </label>
+                        <select id="electrolyte" name="electrolyte" required>
+                            <option value="">Select status</option>
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                        <small style="color: #666;">Yes is abnormal</small>
+                    </div>
+                </div>
+                
+                <!-- E: Enhancement (CT Finding) -->
+                <div class="letter-section">
+                    <div class="letter-header">
+                        <div class="letter-badge">E</div>
+                        <div>
+                            <div class="letter-title">Enhancement</div>
+                            <div class="letter-subtitle">Imaging Finding (Decreased Mural Enhancement)</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="muralEnhancement">
+                            Decreased Mural Enhancement
+                            <span id="muralIndicator" class="indicator indicator-normal">Normal</span>
+                        </label>
+                        <select id="muralEnhancement" name="muralEnhancement" required>
+                            <option value="">Select finding</option>
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                        <small style="color: #666;">Yes is abnormal</small>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-calculate">Calculate ABCDE Score</button>
+            </form>
+            
+            <div id="scoreDisplay" class="score-display" style="display: none;">
+                <div class="score-value" id="scoreValue">0/5</div>
+                <div class="score-label">ABCDE Score (Abnormal Domains)</div>
+            </div>
+            
+            <div id="riskDisplay" class="risk-display" style="display: none;">
+                Risk Stratification Will Appear Here
+            </div>
+            
+            <div id="recommendations" style="display: none; margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                <h4 style="color: #1e3c72; margin-bottom: 10px;">Clinical Recommendations</h4>
+                <ul id="recommendationList" style="list-style-type: none; padding-left: 0;">
+                </ul>
+            </div>
+            
+            <a href="index.html" class="calculator-link">Switch to Precision Risk Calculator →</a>
+            
+            <div style="margin-top: 30px;">
+                <h3 style="color: #1e3c72; margin-bottom: 15px;">ABCDE Reference Table</h3>
+                <table class="reference-table">
+                    <thead>
+                        <tr>
+                            <th>Letter</th>
+                            <th>Domain</th>
+                            <th>Variable(s)</th>
+                            <th>Abnormal Cutoff</th>
+                            <th>Points</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>A</strong></td>
+                            <td>Age / Albumin</td>
+                            <td>Age ≥ 71 years OR Albumin ≤ 38 g/L</td>
+                            <td>Either condition met</td>
+                            <td>1 point</td>
+                        </tr>
+                        <tr>
+                            <td><strong>B</strong></td>
+                            <td>Biochemistry</td>
+                            <td>Serum Lactate ≥ 2.0 mmol/L</td>
+                            <td>Lactate elevated</td>
+                            <td>1 point</td>
+                        </tr>
+                        <tr>
+                            <td><strong>C</strong></td>
+                            <td>Comorbidity</td>
+                            <td>ASA Grade III-IV OR aCCI ≥ 6</td>
+                            <td>Either condition met</td>
+                            <td>1 point</td>
+                        </tr>
+                        <tr>
+                            <td><strong>D</strong></td>
+                            <td>Disturbance</td>
+                            <td>Shock Index ≥ 0.915 OR Electrolyte Disturbance</td>
+                            <td>Either condition met</td>
+                            <td>1 point</td>
+                        </tr>
+                        <tr>
+                            <td><strong>E</strong></td>
+                            <td>Enhancement</td>
+                            <td>Decreased Mural Enhancement (CT)</td>
+                            <td>Present</td>
+                            <td>1 point</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div style="margin-top: 15px;">
+                    <table class="reference-table">
+                        <thead>
+                            <tr>
+                                <th>Total Score</th>
+                                <th>Risk Category</th>
+                                <th>Estimated Failure Rate</th>
+                                <th>Clinical Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="background: #d4edda;">
+                                <td>0-1</td>
+                                <td>Low Risk</td>
+                                <td>&lt; 20%</td>
+                                <td>Standard ERAS protocol</td>
+                            </tr>
+                            <tr style="background: #fff3cd;">
+                                <td>2-3</td>
+                                <td>Intermediate Risk</td>
+                                <td>20-40%</td>
+                                <td>Enhanced monitoring & modified ERAS</td>
+                            </tr>
+                            <tr style="background: #f8d7da;">
+                                <td>4-5</td>
+                                <td>High Risk</td>
+                                <td>≥ 40%</td>
+                                <td>Intensive management & staged rehabilitation</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="disclaimer">
+                <strong>Disclaimer:</strong> This ABCDE screening tool is a simplified version of the full prediction model. It is designed for rapid clinical triage. For precise probability estimation, use the full calculator. Cutoff values were derived from Youden index optimization in the training cohort.
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Cutoff values from ROC analysis
+        const CUTOFFS = {
+            age: 71,
+            albumin: 38,
+            lactate: 2.0,
+            asa: 1,  // Grade III-IV = 1 (abnormal)
+            acci: 6,
+            shockIndex: 0.915,
+            electrolyte: 1,  // Yes = 1 (abnormal)
+            muralEnhancement: 1  // Yes = 1 (abnormal)
+        };
+        
+        // Update indicators on input change
+        function updateIndicator(elementId, indicatorId, isAbnormal) {
+            const indicator = document.getElementById(indicatorId);
+            if (isAbnormal) {
+                indicator.textContent = 'Abnormal';
+                indicator.className = 'indicator indicator-abnormal';
+            } else {
+                indicator.textContent = 'Normal';
+                indicator.className = 'indicator indicator-normal';
+            }
+        }
+        
+        document.getElementById('age').addEventListener('input', function() {
+            const val = parseFloat(this.value);
+            updateIndicator('age', 'ageIndicator', val >= CUTOFFS.age);
+        });
+        
+        document.getElementById('albumin').addEventListener('input', function() {
+            const val = parseFloat(this.value);
+            updateIndicator('albumin', 'albuminIndicator', val <= CUTOFFS.albumin);
+        });
+        
+        document.getElementById('lactate').addEventListener('input', function() {
+            const val = parseFloat(this.value);
+            updateIndicator('lactate', 'lactateIndicator', val >= CUTOFFS.lactate);
+        });
+        
+        document.getElementById('asa').addEventListener('change', function() {
+            const val = parseInt(this.value);
+            updateIndicator('asa', 'asaIndicator', val === CUTOFFS.asa);
+        });
+        
+        document.getElementById('acci').addEventListener('input', function() {
+            const val = parseFloat(this.value);
+            updateIndicator('acci', 'acciIndicator', val >= CUTOFFS.acci);
+        });
+        
+        document.getElementById('shockIndex').addEventListener('input', function() {
+            const val = parseFloat(this.value);
+            updateIndicator('shockIndex', 'shockIndicator', val >= CUTOFFS.shockIndex);
+        });
+        
+        document.getElementById('electrolyte').addEventListener('change', function() {
+            const val = parseInt(this.value);
+            updateIndicator('electrolyte', 'electrolyteIndicator', val === CUTOFFS.electrolyte);
+        });
+        
+        document.getElementById('muralEnhancement').addEventListener('change', function() {
+            const val = parseInt(this.value);
+            updateIndicator('muralEnhancement', 'muralIndicator', val === CUTOFFS.muralEnhancement);
+        });
+        
+        document.getElementById('abcdeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            calculateScore();
+        });
+        
+        function calculateScore() {
+            // Get values
+            const age = parseFloat(document.getElementById('age').value) || 0;
+            const albumin = parseFloat(document.getElementById('albumin').value) || 0;
+            const lactate = parseFloat(document.getElementById('lactate').value) || 0;
+            const asa = parseInt(document.getElementById('asa').value) || 0;
+            const acci = parseFloat(document.getElementById('acci').value) || 0;
+            const shockIndex = parseFloat(document.getElementById('shockIndex').value) || 0;
+            const electrolyte = parseInt(document.getElementById('electrolyte').value) || 0;
+            const muralEnhancement = parseInt(document.getElementById('muralEnhancement').value) || 0;
+            
+            // Calculate score for each letter (1 point if any variable in the letter is abnormal)
+            let score = 0;
+            
+            // A: Age ≥ 71 OR Albumin ≤ 38
+            if (age >= CUTOFFS.age || albumin <= CUTOFFS.albumin) {
+                score++;
+            }
+            
+            // B: Lactate ≥ 2.0
+            if (lactate >= CUTOFFS.lactate) {
+                score++;
+            }
+            
+            // C: ASA Grade III-IV OR aCCI ≥ 6
+            if (asa === CUTOFFS.asa || acci >= CUTOFFS.acci) {
+                score++;
+            }
+            
+            // D: Shock Index ≥ 0.915 OR Electrolyte disturbance
+            if (shockIndex >= CUTOFFS.shockIndex || electrolyte === CUTOFFS.electrolyte) {
+                score++;
+            }
+            
+            // E: Decreased mural enhancement = Yes
+            if (muralEnhancement === CUTOFFS.muralEnhancement) {
+                score++;
+            }
+            
+            // Display score
+            document.getElementById('scoreValue').textContent = score + '/5';
+            document.getElementById('scoreDisplay').style.display = 'block';
+            
+            // Risk stratification
+            let riskClass, riskText, recommendations;
+            
+            if (score <= 1) {
+                riskClass = 'risk-low';
+                riskText = 'LOW RISK (Score: ' + score + '/5) - Standard ERAS Protocol';
+                recommendations = [
+                    'Proceed with standard ERAS protocol',
+                    'Routine perioperative care',
+                    'Standard discharge criteria apply',
+                    'Monitor for any protocol deviations'
+                ];
+            } else if (score <= 3) {
+                riskClass = 'risk-intermediate';
+                riskText = 'INTERMEDIATE RISK (Score: ' + score + '/5) - Enhanced Monitoring';
+                recommendations = [
+                    'ERAS protocol with enhanced monitoring',
+                    'Consider extended postoperative observation (24-48h)',
+                    'Aggressive fluid and electrolyte management',
+                    'Early mobilization with assistance',
+                    'Nutritional support optimization'
+                ];
+            } else {
+                riskClass = 'risk-high';
+                riskText = 'HIGH RISK (Score: ' + score + '/5) - Intensive Management';
+                recommendations = [
+                    'Modified ERAS protocol with intensive monitoring',
+                    'Consider prehabilitation if time permits',
+                    'Aggressive hemodynamic optimization preoperatively',
+                    'Extended ICU/HDU observation postoperatively',
+                    'Early enteral nutrition with close monitoring',
+                    'Proactive complication prevention strategies',
+                    'Consider staged rehabilitation approach'
+                ];
+            }
+            
+            const riskDiv = document.getElementById('riskDisplay');
+            riskDiv.className = 'risk-display ' + riskClass;
+            riskDiv.textContent = riskText;
+            riskDiv.style.display = 'block';
+            
+            // Update recommendations
+            const recList = document.getElementById('recommendationList');
+            recList.innerHTML = '';
+            recommendations.forEach(rec => {
+                const li = document.createElement('li');
+                li.textContent = '→ ' + rec;
+                li.style.padding = '5px 0';
+                recList.appendChild(li);
+            });
+            document.getElementById('recommendations').style.display = 'block';
+            
+            // Scroll to results
+            document.getElementById('scoreDisplay').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
