@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERAS Failure Risk Calculator - Emergency SBO Surgery</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .description {
+            background: #f8f9fa;
+            border-left: 4px solid #2a5298;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .description h3 {
+            color: #1e3c72;
+            margin-bottom: 8px;
+        }
+        
+        .description p {
+            font-size: 14px;
+            color: #555;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #1e3c72;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .form-group .unit {
+            font-weight: normal;
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #2a5298;
+        }
+        
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .btn-calculate {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+        
+        .btn-calculate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(30, 60, 114, 0.4);
+        }
+        
+        .results {
+            margin-top: 25px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .results.show {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .probability-display {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .probability-value {
+            font-size: 48px;
+            font-weight: 700;
+            color: #1e3c72;
+        }
+        
+        .probability-label {
+            font-size: 16px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .risk-stratification {
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-size: 18px;
+        }
+        
+        .risk-low {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+        
+        .risk-intermediate {
+            background: #fff3cd;
+            color: #856404;
+            border: 2px solid #ffeaa7;
+        }
+        
+        .risk-high {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+        
+        .clinical-pathway {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            margin-top: 15px;
+        }
+        
+        .clinical-pathway h4 {
+            color: #1e3c72;
+            margin-bottom: 10px;
+        }
+        
+        .clinical-pathway ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .clinical-pathway li {
+            padding: 5px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .clinical-pathway li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #2a5298;
+        }
+        
+        .formula-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f0fe;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #555;
+        }
+        
+        .formula-info h4 {
+            color: #1e3c72;
+            margin-bottom: 8px;
+        }
+        
+        .abcde-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            padding: 12px;
+            background: #17a2b8;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .abcde-link:hover {
+            background: #138496;
+        }
+        
+        .disclaimer {
+            margin-top: 20px;
+            padding: 10px;
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #856404;
+        }
+        
+        @media (max-width: 600px) {
+            .row {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 22px;
+            }
+            
+            .probability-value {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ERAS Failure Risk Calculator</h1>
+            <p>Emergency Surgery for Acute Small Bowel Obstruction (SBO)</p>
+        </div>
+        
+        <div class="content">
+            <div class="description">
+                <h3>About This Calculator</h3>
+                <p>This tool predicts the risk of standard ERAS (Enhanced Recovery After Surgery) failure in patients undergoing emergency surgery for acute small bowel obstruction. The prediction model was developed and validated using a multicenter cohort study and is intended for preoperative risk stratification and clinical decision support.</p>
+            </div>
+            
+            <form id="calculatorForm">
+                <div class="row">
+                    <div class="form-group">
+                        <label for="age">Age <span class="unit">(years)</span></label>
+                        <input type="number" id="age" name="age" min="0" max="120" step="1" required placeholder="e.g., 65">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="asa">ASA Classification <span class="unit">(Roman numerals)</span></label>
+                        <select id="asa" name="asa" required>
+                            <option value="">Select ASA grade</option>
+                            <option value="0">Grade I-II</option>
+                            <option value="1">Grade III-IV</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="form-group">
+                        <label for="acci">Age-adjusted Charlson Comorbidity Index (aCCI) <span class="unit">(score)</span></label>
+                        <input type="number" id="acci" name="acci" min="0" max="37" step="1" required placeholder="e.g., 3">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="albumin">Serum Albumin <span class="unit">(g/L)</span></label>
+                        <input type="number" id="albumin" name="albumin" min="0" max="100" step="0.1" required placeholder="e.g., 35.5">
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="form-group">
+                        <label for="shockIndex">Shock Index <span class="unit">(HR/SBP, decimal)</span></label>
+                        <input type="number" id="shockIndex" name="shockIndex" min="0" max="5" step="0.01" required placeholder="e.g., 0.85">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="lactate">Serum Lactate <span class="unit">(mmol/L)</span></label>
+                        <input type="number" id="lactate" name="lactate" min="0" max="50" step="0.01" required placeholder="e.g., 2.5">
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="form-group">
+                        <label for="muralEnhancement">Decreased Mural Enhancement <span class="unit">(CT finding)</span></label>
+                        <select id="muralEnhancement" name="muralEnhancement" required>
+                            <option value="">Select finding</option>
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="electrolyte">Electrolyte Disturbance <span class="unit">(Yes/No)</span></label>
+                        <select id="electrolyte" name="electrolyte" required>
+                            <option value="">Select status</option>
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-calculate">Calculate ERAS Failure Risk</button>
+            </form>
+            
+            <div id="results" class="results">
+                <div class="probability-display">
+                    <div class="probability-value" id="probabilityValue">--%</div>
+                    <div class="probability-label">Predicted Probability of ERAS Failure</div>
+                </div>
+                
+                <div id="riskStratification" class="risk-stratification">
+                    Risk Stratification: --
+                </div>
+                
+                <div class="clinical-pathway" id="clinicalPathway">
+                    <h4>Model-Guided Clinical Pathway</h4>
+                    <ul id="pathwayList">
+                        <li>Pathway recommendations will appear here</li>
+                    </ul>
+                </div>
+                
+                <div class="formula-info">
+                    <h4>Model Information</h4>
+                    <p><strong>Development Cohort:</strong> N = 640 (Training), 7:3 internal validation, external validation cohort</p>
+                    <p><strong>Model Type:</strong> Multivariate Logistic Regression with LASSO variable selection (λ.1se, 10-fold CV)</p>
+                    <p><strong>Performance:</strong> AUC = 0.924 (Training), 0.935 (Internal Validation), 0.907 (External Validation)</p>
+                    <p><strong>Calibration:</strong> Hosmer-Lemeshow test p > 0.05; well-calibrated across all cohorts</p>
+                    <p><strong>Clinical Utility:</strong> Net benefit demonstrated by Decision Curve Analysis</p>
+                </div>
+                
+                <a href="abcde-tool.html" class="abcde-link">Switch to ABCDE Screening Tool →</a>
+            </div>
+            
+            <div class="disclaimer">
+                <strong>Disclaimer:</strong> This calculator is for research and educational purposes only. It should not replace clinical judgment. The model was developed for adult patients undergoing emergency laparotomy for acute small bowel obstruction with planned ERAS implementation. Predictions are probabilistic and should be interpreted in the context of individual patient factors.
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Model coefficients from multivariate logistic regression
+        // Source: R glm() output on training cohort (N=640)
+        // All coefficients extracted from '4. R语言原始输出结果.docx' Table 2
+        const COEFFICIENTS = {
+            intercept: -9.659714,
+            age: 0.0506770685,
+            asa: 1.7789876534,
+            acci: 0.3350471249,
+            albumin: -0.0500661185,
+            muralEnhancement: 2.3110615562,
+            shockIndex: 1.9642234967,
+            lactate: 1.1585602154,
+            electrolyte: 0.9360609543
+        };
+        
+        // Risk stratification thresholds based on training cohort failure rate distribution
+        const RISK_THRESHOLDS = {
+            low: 0.20,      // < 20%
+            intermediate: 0.40  // 20-40%
+        };
+        
+        document.getElementById('calculatorForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            calculateRisk();
+        });
+        
+        function calculateRisk() {
+            // Get input values
+            const age = parseFloat(document.getElementById('age').value);
+            const asa = parseInt(document.getElementById('asa').value);
+            const acci = parseFloat(document.getElementById('acci').value);
+            const albumin = parseFloat(document.getElementById('albumin').value);
+            const shockIndex = parseFloat(document.getElementById('shockIndex').value);
+            const lactate = parseFloat(document.getElementById('lactate').value);
+            const muralEnhancement = parseInt(document.getElementById('muralEnhancement').value);
+            const electrolyte = parseInt(document.getElementById('electrolyte').value);
+            
+            // Calculate linear predictor (logit)
+            let logit = COEFFICIENTS.intercept;
+            logit += COEFFICIENTS.age * age;
+            logit += COEFFICIENTS.asa * asa;
+            logit += COEFFICIENTS.acci * acci;
+            logit += COEFFICIENTS.albumin * albumin;
+            logit += COEFFICIENTS.muralEnhancement * muralEnhancement;
+            logit += COEFFICIENTS.shockIndex * shockIndex;
+            logit += COEFFICIENTS.lactate * lactate;
+            logit += COEFFICIENTS.electrolyte * electrolyte;
+            
+            // Calculate probability using logistic function
+            const probability = 1 / (1 + Math.exp(-logit));
+            const probabilityPercent = (probability * 100).toFixed(1);
+            
+            // Display probability
+            document.getElementById('probabilityValue').textContent = probabilityPercent + '%';
+            
+            // Risk stratification
+            let riskClass, riskText, pathwayRecommendations;
+            
+            if (probability < RISK_THRESHOLDS.low) {
+                riskClass = 'risk-low';
+                riskText = 'LOW RISK (< 20%) - Standard ERAS Protocol';
+                pathwayRecommendations = [
+                    'Proceed with standard ERAS protocol',
+                    'Routine perioperative care',
+                    'Standard discharge criteria apply',
+                    'Monitor for any protocol deviations'
+                ];
+            } else if (probability < RISK_THRESHOLDS.intermediate) {
+                riskClass = 'risk-intermediate';
+                riskText = 'INTERMEDIATE RISK (20-40%) - Enhanced Monitoring';
+                pathwayRecommendations = [
+                    'ERAS protocol with enhanced monitoring',
+                    'Consider extended postoperative observation (24-48h)',
+                    'Aggressive fluid and electrolyte management',
+                    'Early mobilization with assistance',
+                    'Nutritional support optimization'
+                ];
+            } else {
+                riskClass = 'risk-high';
+                riskText = 'HIGH RISK (≥ 40%) - Intensive Management';
+                pathwayRecommendations = [
+                    'Modified ERAS protocol with intensive monitoring',
+                    'Consider prehabilitation if time permits',
+                    'Aggressive hemodynamic optimization preoperatively',
+                    'Extended ICU/HDU observation postoperatively',
+                    'Early enteral nutrition with close monitoring',
+                    'Proactive complication prevention strategies',
+                    'Consider staged rehabilitation approach'
+                ];
+            }
+            
+            // Update risk stratification display
+            const riskDiv = document.getElementById('riskStratification');
+            riskDiv.className = 'risk-stratification ' + riskClass;
+            riskDiv.textContent = riskText;
+            
+            // Update clinical pathway
+            const pathwayList = document.getElementById('pathwayList');
+            pathwayList.innerHTML = '';
+            pathwayRecommendations.forEach(rec => {
+                const li = document.createElement('li');
+                li.textContent = rec;
+                pathwayList.appendChild(li);
+            });
+            
+            // Show results
+            document.getElementById('results').classList.add('show');
+            
+            // Scroll to results
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
